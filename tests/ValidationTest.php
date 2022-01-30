@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Test;
 
+use App\BarChecker;
 use App\BarConstraint;
 use App\BarConstraintValidator;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -16,7 +17,10 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 
     public function testInvalidStringBuildsViolation(): void
     {
-        $validator            = new BarConstraintValidator();
+        $checker = $this->createMock(BarChecker::class);
+        $checker->method('verify')->willReturn(false);
+
+        $validator            = new BarConstraintValidator($checker);
         $executionContextMock = $this->createMock(ExecutionContextInterface::class);
         $executionContextMock
             ->expects($this->once())->method('buildViolation');
@@ -28,7 +32,10 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 
     public function testValidNifDoesNotBuildViolation(): void
     {
-        $validator            = new BarConstraintValidator();
+        $checker = $this->createMock(BarChecker::class);
+        $checker->method('verify')->willReturn(true);
+
+        $validator            = new BarConstraintValidator($checker);
         $executionContextMock = $this->createMock(ExecutionContextInterface::class);
         $executionContextMock
             ->expects($this->never())->method('buildViolation');

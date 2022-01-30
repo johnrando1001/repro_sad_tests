@@ -12,6 +12,10 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class BarConstraintValidator extends ConstraintValidator
 {
 
+    public function __construct(private BarChecker $checker)
+    {
+    }
+
     public function validate(mixed $value, Constraint $constraint): void
     {
         if ( ! $constraint instanceof BarConstraint) {
@@ -26,7 +30,7 @@ class BarConstraintValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if ($value === 'bar') {
+        if ($this->checker->verify($value)) {
             return;
         }
 
